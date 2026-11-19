@@ -4,3 +4,5 @@ out/
 node_modules/
 .DS_Store
 *.log
+# Scratch files from screenshot runs and one-off validation outputs
+*.tmp

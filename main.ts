@@ -16,7 +16,7 @@
 // In the grader's container MAKEFUN_OUTPUT_DIR is unset and the output
 // directory is /output. Run it twice: both runs must write identical bytes.
 
-import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-frontend.ts';
@@ -29,6 +29,18 @@ for (const needed of ['app', 'screenshots']) {
   if (!existsSync(join(repoRoot, needed))) {
     throw new Error(`missing ${needed}/ beside main.ts — refusing to build an incomplete entry`);
   }
+}
+
+// The tracker data is the entry: refuse a build whose trophy list is not
+// exactly the 55 official trophies, so a bad edit fails here instead of at
+// the scorer. (v2: the five once-unconfirmed trophies were re-researched on
+// 19 November 2026 — Capital Offense and The Truth Is Out There confirmed,
+// In The Beginning… method agreed with the exact spot still open, Bad Luck,
+// I Guess and Ten Pin still honestly unconfirmed — and the counts re-checked
+// against a second source.)
+const trophies = JSON.parse(readFileSync(join(repoRoot, 'app', 'data', 'trophies.json'), 'utf-8'));
+if (!Array.isArray(trophies.trophies) || trophies.trophies.length !== 55) {
+  throw new Error(`expected 55 trophies in app/data/trophies.json, found ${Array.isArray(trophies.trophies) ? trophies.trophies.length : 'none'} — refusing to build an incomplete entry`);
 }
 
 mkdirSync(outputDir, { recursive: true });

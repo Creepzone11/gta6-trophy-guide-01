@@ -6,6 +6,9 @@
 //   ?spoiler=1  spoiler-free mode on   ?kind=story|missable|collectibles|activities|online
 //   ?grade=bronze|silver|gold|platinum ?search=text   ?earned=2,3,8  pre-tick trophies
 //   ?focus=roadmap|missable|trophy-<id>  scroll that part into view on load
+// The masthead also carries a featured card for the one missable trophy
+// (Positive Mental Attitude, id 28), always open beside the big progress
+// card, so the first screen already reads as a complete tracker.
 const KEY = 'gta6-trophy-checklist';
 const SPOILER_KEY = 'gta6-trophy-spoiler';
 
@@ -88,6 +91,69 @@ function renderMissable() {
     li.append(b, ` — ${t.missable_note || t.description}`);
     list.append(li);
   }
+}
+
+function renderFeatured() {
+  // The masthead's featured card is the one trophy you must not miss
+  // (Positive Mental Attitude, id 28). Its guide is always open beside the
+  // big progress card, so the first screen already reads as a complete
+  // tracker. It ticks from the same earned set as the checklist below, and
+  // the missable warning lives in the guide itself, so no note is repeated.
+  const card = document.getElementById('featuredCard');
+  const t = byId.get(28);
+  card.replaceChildren();
+  if (!t) return;
+  const box = document.createElement('input');
+  box.type = 'checkbox';
+  box.checked = earned.has(t.id);
+  box.setAttribute('aria-label', `Earned: ${t.name}`);
+  box.addEventListener('change', () => {
+    if (box.checked) earned.add(t.id); else earned.delete(t.id);
+    save();
+    render();
+  });
+  const body = document.createElement('div');
+  const head = document.createElement('div');
+  head.className = 'trophy-head';
+  const eyebrow = document.createElement('span');
+  eyebrow.className = 'featured-eyebrow';
+  eyebrow.textContent = '★ Featured — the one missable trophy';
+  head.append(eyebrow);
+  const h = document.createElement('h3');
+  h.textContent = t.name;
+  const badge = document.createElement('span');
+  badge.className = `badge ${t.grade}`;
+  badge.textContent = t.grade;
+  head.append(h, badge);
+  const tag = document.createElement('span');
+  tag.className = 'tag missable';
+  tag.textContent = '⚠ Missable';
+  head.append(tag);
+  body.append(head);
+  const official = document.createElement('p');
+  official.className = 'official';
+  official.textContent = `“${t.description}” — official PlayStation description.`;
+  body.append(official);
+  const guide = document.createElement('p');
+  guide.className = 'guide';
+  const label = document.createElement('strong');
+  label.textContent = 'How to get it: ';
+  guide.append(label, t.guide);
+  body.append(guide);
+  const sources = document.createElement('p');
+  sources.className = 'sources';
+  sources.textContent = 'Sources: ';
+  t.sources.forEach((s, i) => {
+    if (i) sources.append(' · ');
+    const a = document.createElement('a');
+    a.href = s.url;
+    a.textContent = s.name;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    sources.append(a);
+  });
+  body.append(sources);
+  card.append(box, body);
 }
 
 function trophyIsHidden(t) {
@@ -199,11 +265,19 @@ function render() {
   document.getElementById('progressFill').style.width = `${Math.round((n / total) * 100)}%`;
   document.getElementById('progressText').textContent =
     `${n} of ${total} earned · ${Math.round((n / total) * 100)}% to platinum`;
-  const counts = ['platinum', 'gold', 'silver', 'bronze']
-    .map((g) => `${earned.size && trophies.filter((t) => t.grade === g && earned.has(t.id)).length}/${trophies.filter((t) => t.grade === g).length} ${g}`)
-    .join(' · ');
-  document.getElementById('gradeCounts').innerHTML = '';
-  document.getElementById('gradeCounts').textContent = counts;
+  const gradeCounts = document.getElementById('gradeCounts');
+  gradeCounts.replaceChildren();
+  for (const g of ['platinum', 'gold', 'silver', 'bronze']) {
+    const have = trophies.filter((t) => t.grade === g && earned.has(t.id)).length;
+    const total = trophies.filter((t) => t.grade === g).length;
+    const chip = document.createElement('span');
+    chip.className = `grade-chip ${g}`;
+    const b = document.createElement('b');
+    b.textContent = `${have}/${total}`;
+    chip.append(b, ` ${g}`);
+    gradeCounts.append(chip);
+  }
+  renderFeatured();
 }
 
 document.getElementById('export').addEventListener('click', () => {
@@ -248,7 +322,8 @@ if (focus) {
     : focus === 'missable' ? document.getElementById('missableBox')
     : document.getElementById(focus);
   if (target) {
-    const top = target.getBoundingClientRect().top + window.scrollY - 70;
+    // 120px clears the sticky toolbar, which is about 100px tall when stuck.
+    const top = target.getBoundingClientRect().top + window.scrollY - 120;
     window.scrollTo(0, top);
   }
 }
