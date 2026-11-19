@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leonida Trophy Guide — GTA VI Platinum Tracker</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="masthead">
+  <div>
+    <p class="kicker">GRAND THEFT AUTO VI &middot; PLAYSTATION 5 &middot; OFFLINE GUIDE</p>
+    <h1>Leonida Trophy Guide</h1>
+    <p class="subtitle">Every trophy, every guide, every source — and a tracker that remembers where you are on the road to the platinum.</p>
+  </div>
+  <div class="progress-card" id="progressCard">
+    <div class="progress-numbers"><span id="earnedCount">0</span><span class="of">/ 55</span></div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <p id="progressText">0 of 55 earned &middot; 0% to platinum</p>
+    <p class="grade-counts" id="gradeCounts"></p>
+  </div>
+</header>
+
+<section class="roadmap" id="roadmap">
+  <h2>Roadmap to Platinum — about 200 hours, one playthrough</h2>
+  <p class="roadmap-note">Built from the official trophy descriptions. No online trophies, no difficulty trophies, no mission medals. Cheats disable trophies and saving — keep them off on this save. There is no mission replay and no New Game+, so keep a manual save at the start of each chapter (15 manual slots).</p>
+  <ol class="stages" id="stages"></ol>
+</section>
+
+<section class="missable-box" id="missableBox">
+  <h2>&#9888; Missable trophies — 1 possible</h2>
+  <p>Only one trophy is reported as possibly missable. Every other trophy can be earned after the story in free-roam.</p>
+  <ul id="missableList"></ul>
+</section>
+
+<div class="toolbar" id="toolbar">
+  <input id="search" type="search" placeholder="Search trophy name or description…" aria-label="Search trophies">
+  <label>Kind
+    <select id="kind">
+      <option value="all">All kinds</option>
+      <option value="story">Story</option>
+      <option value="missable">Missable</option>
+      <option value="collectibles">Collectibles</option>
+      <option value="activities">Activities</option>
+      <option value="online">Online</option>
+    </select>
+  </label>
+  <label>Grade
+    <select id="grade">
+      <option value="all">All grades</option>
+      <option value="platinum">Platinum</option>
+      <option value="gold">Gold</option>
+      <option value="silver">Silver</option>
+      <option value="bronze">Bronze</option>
+    </select>
+  </label>
+  <label class="check"><input id="hideEarned" type="checkbox"> Hide earned</label>
+  <label class="check spoiler"><input id="spoiler" type="checkbox"> Spoiler-free mode</label>
+  <button id="export" type="button">Export progress</button>
+  <label class="import">Import progress <input id="import" type="file" accept="application/json"></label>
+  <span class="toolbar-progress" id="toolbarProgress"></span>
+</div>
+
+<p class="showing" id="showing"></p>
+
+<main>
+  <ul class="trophy-list" id="rows"></ul>
+  <p class="empty" id="empty" hidden>No trophies match these filters. Try clearing the search or choosing “All kinds”.</p>
+</main>
+
+<footer>
+  <p>Names, descriptions and grades are PlayStation's official trophy text. Guides are written for this entry from the sources named under each trophy — PowerPyx, Push Square, GTA Zone and PlanetGTA6 — and are not copied from any other guide. Five trophies (In The Beginning…, Capital Offense, Bad Luck, I Guess, The Truth Is Out There, Ten Pin) have no confirmed unlock method yet; their guides say so plainly instead of guessing.</p>
+  <p>All 55 trophies are single-player. Progress is saved in your browser (localStorage) and never leaves your device. This guide works fully offline.</p>
+</footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
