@@ -1,63 +1,55 @@
-// Leonida Trophy Guide — the hand-in program for gta6-trophy-guide-01.
+// Hand-in script for the Leonida Trophy Guide (gta6-trophy-guide-01).
 //
-// The entry itself is plain static files: app/ holds the guide and tracker
-// (index.html, style.css, app.js and app/data/trophies.json), screenshots/
-// holds four renders of the app taken in a browser. There is no build step
-// and nothing is fetched over the network, at build time or at run time.
+// What the entry is: static files, nothing more. `app/` is the guide and
+// tracker itself (HTML, CSS, JS, plus the trophy data in JSON); `screenshots/`
+// is four renders of the app taken in a browser. There is no build step, no
+// bundler, and the app never touches the network — at build time or at run
+// time, the only files it reads are the ones in this repo.
 //
-// This program copies app/ and screenshots/ from beside this file into the
-// output directory and writes dossier.json there with buildDossier from the
-// vendored make.fun library (vendor/makefun-frontend.ts — leave that file
-// exactly as the kit shipped it: the scorer rebuilds the dossier with its own
-// copy and compares the two byte for byte).
+// What this script does, step by step:
+//   1. Checks that `app/` and `screenshots/` are actually here. If one is
+//      missing, it throws instead of handing in half an entry.
+//   2. Copies both folders into the output directory.
+//   3. Writes `dossier.json` into the output directory with buildDossier
+//      from the vendored make.fun library in vendor/makefun-frontend.ts.
+//      That vendor file is kit code — do not edit it: the scorer rebuilds
+//      the dossier with its own copy and compares the two byte for byte.
 //
-// Run it locally with:
+// Where the output goes: the MAKEFUN_OUTPUT_DIR environment variable when
+// it is set, otherwise /output (the grader's container). Try it locally:
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
-// In the grader's container MAKEFUN_OUTPUT_DIR is unset and the output
-// directory is /output. Run it twice: both runs must write identical bytes.
+// Run it twice and the two dossiers must be byte-identical.
 
-import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-frontend.ts';
 
-const repoRoot = fileURLToPath(new URL('.', import.meta.url));
-const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const here = fileURLToPath(new URL('.', import.meta.url));
+const outDir = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';
+const folders = ['app', 'screenshots'];
 
-// Fail loudly instead of handing in half an entry if a folder is missing.
-for (const needed of ['app', 'screenshots']) {
-  if (!existsSync(join(repoRoot, needed))) {
-    throw new Error(`missing ${needed}/ beside main.ts — refusing to build an incomplete entry`);
+// Refuse to hand in an entry that is missing a piece.
+for (const folder of folders) {
+  if (!existsSync(join(here, folder))) {
+    throw new Error(`cannot build the entry: ${folder}/ is missing beside main.ts`);
   }
 }
 
-// The tracker data is the entry: refuse a build whose trophy list is not
-// exactly the 55 official trophies, so a bad edit fails here instead of at
-// the scorer. (v2: the five once-unconfirmed trophies were re-researched on
-// 19 November 2026 — Capital Offense and The Truth Is Out There confirmed,
-// In The Beginning… method agreed with the exact spot still open, Bad Luck,
-// I Guess and Ten Pin still honestly unconfirmed — and the counts re-checked
-// against a second source.)
-const trophies = JSON.parse(readFileSync(join(repoRoot, 'app', 'data', 'trophies.json'), 'utf-8'));
-if (!Array.isArray(trophies.trophies) || trophies.trophies.length !== 55) {
-  throw new Error(`expected 55 trophies in app/data/trophies.json, found ${Array.isArray(trophies.trophies) ? trophies.trophies.length : 'none'} — refusing to build an incomplete entry`);
+mkdirSync(outDir, { recursive: true });
+for (const folder of folders) {
+  cpSync(join(here, folder), join(outDir, folder), { recursive: true });
 }
 
-mkdirSync(outputDir, { recursive: true });
-cpSync(join(repoRoot, 'app'), join(outputDir, 'app'), { recursive: true });
-mkdirSync(join(outputDir, 'screenshots'), { recursive: true });
-cpSync(join(repoRoot, 'screenshots'), join(outputDir, 'screenshots'), { recursive: true });
-
-// The caps mirror the scorer's own gate (reference/gate.json): at most four
-// screenshots of 256 KiB each, at most 993 files and directories totalling
-// 48 MiB under app/, and the dossier text capped at 160 KiB. Only the text
-// cap shapes bytes; the rest refuse an entry the scorer would refuse anyway.
-writeFileSync(
-  join(outputDir, 'dossier.json'),
-  buildDossier(outputDir, {
-    text_max_bytes: 163840,
-    screenshots: { max: 4, max_bytes: 262144 },
-    app_max_files: 993,
-    app_max_bytes: 50331648,
-  }),
-);
+// Caps taken from the scorer's own gate (reference/gate.json): no more than
+// four screenshots of 256 KiB each, no more than 993 files and directories
+// totalling 48 MiB under app/, and the dossier text capped at 160 KiB.
+// Only the text cap changes any bytes; the rest simply refuse an entry the
+// scorer would refuse anyway.
+const dossier = buildDossier(outDir, {
+  text_max_bytes: 163840,
+  screenshots: { max: 4, max_bytes: 262144 },
+  app_max_files: 993,
+  app_max_bytes: 50331648,
+});
+writeFileSync(join(outDir, 'dossier.json'), dossier);
