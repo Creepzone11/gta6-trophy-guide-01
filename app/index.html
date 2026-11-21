@@ -50,16 +50,6 @@
 <!-- Search, filters, spoiler mode, export/import. Sticks to the top. -->
 <div class="toolbar" id="toolbar">
   <input id="search" type="search" placeholder="Search trophy name or description…" aria-label="Search trophies">
-  <label>Kind
-    <select id="kind">
-      <option value="all">All kinds</option>
-      <option value="story">Story</option>
-      <option value="missable">Missable</option>
-      <option value="collectibles">Collectibles</option>
-      <option value="activities">Activities</option>
-      <option value="online">Online</option>
-    </select>
-  </label>
   <label>Grade
     <select id="grade">
       <option value="all">All grades</option>
@@ -74,6 +64,18 @@
   <button id="export" type="button">Export progress</button>
   <label class="import">Import progress <input id="import" type="file" accept="application/json"></label>
   <span class="toolbar-progress" id="toolbarProgress"></span>
+  <div class="chips" id="chips" role="group" aria-label="Filter by category">
+    <button type="button" class="chip active" data-kind="all">All</button>
+    <button type="button" class="chip" data-kind="story">Story</button>
+    <button type="button" class="chip" data-kind="strangers">Strangers</button>
+    <button type="button" class="chip" data-kind="crime">Crime</button>
+    <button type="button" class="chip" data-kind="activities">Activities</button>
+    <button type="button" class="chip" data-kind="collectibles">Collectibles</button>
+    <button type="button" class="chip" data-kind="money">Money</button>
+    <button type="button" class="chip" data-kind="combat">Combat</button>
+    <button type="button" class="chip" data-kind="secret">Secret</button>
+    <button type="button" class="chip" data-kind="missable">Missable</button>
+  </div>
 </div>
 
 <p class="showing" id="showing"></p>
@@ -84,9 +86,18 @@
 </main>
 
 <footer>
-  <p>Names, descriptions and grades are PlayStation's official trophy text. The guides are written for this entry from the sources named under each trophy — PowerPyx, Push Square, GTA Zone and PlanetGTA6 — and are not copied from any other guide. Two trophies whose unlock method was unconfirmed are now confirmed (Capital Offense and The Truth Is Out There); the trophies still unconfirmed (In The Beginning…, Bad Luck, I Guess, Ten Pin) say so plainly instead of guessing.</p>
+  <p>Names, descriptions and grades are PlayStation's official trophy text — the official PlayStation trophy list, mirrored on Exophase and PSNProfiles. The guides are written for this entry from the sources named under each trophy — PowerPyx, Push Square, GTA Zone, GTABase and GamesHorizon — and are not copied from any other guide. Two trophies whose unlock method was unconfirmed are now confirmed (Capital Offense and The Truth Is Out There); the trophies still unconfirmed (In The Beginning…, Bad Luck, I Guess, Ten Pin) say so plainly instead of guessing, and are marked “own advice — not yet checked in the game”.</p>
   <p>All 55 trophies are single-player. Progress is saved in your browser (localStorage) and never leaves your device. This guide works fully offline.</p>
 </footer>
+
+<!-- Per-trophy detail panel: official name, description, grade, missable flag,
+     own-words steps and the Sources block. Opened by clicking a trophy name. -->
+<div class="detail-overlay" id="detailOverlay" hidden>
+  <div class="detail-panel" role="dialog" aria-modal="true" aria-labelledby="detailName">
+    <button class="detail-close" id="detailClose" type="button" aria-label="Close details">&times;</button>
+    <div id="detailBody"></div>
+  </div>
+</div>
 
 <script type="module" src="app.js"></script>
 </body>

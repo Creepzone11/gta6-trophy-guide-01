@@ -213,6 +213,27 @@ h1 {
 .toolbar-progress { margin-left: auto; font-size: 14px; font-weight: 700; color: var(--gold); white-space: nowrap; }
 .showing { margin: 8px 0 0; padding: 0 28px; font-size: 13px; color: var(--muted); }
 
+/* ---- Category filter chips ---- */
+.chips {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 10px;
+}
+.chip {
+  padding: 7px 14px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.chip:hover { border-color: var(--cyan); color: var(--ink); }
+.chip.active { background: var(--pink); border-color: var(--pink); color: #fff; }
+
 /* ---- Trophy checklist ---- */
 .trophy-list { list-style: none; margin: 12px 0 0; padding: 0 28px 8px; display: grid; gap: 10px; }
 .trophy {
@@ -229,6 +250,18 @@ h1 {
 .trophy input[type="checkbox"] { width: 22px; height: 22px; margin-top: 4px; accent-color: var(--pink); cursor: pointer; }
 .trophy-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; }
 .trophy-head h3 { margin: 0; font-size: 18px; color: #fff; }
+.trophy-name {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+.trophy-name:hover { color: var(--cyan); text-decoration: underline; }
 .hidden-name { color: var(--muted); font-style: italic; }
 .badge {
   padding: 2px 8px;
@@ -268,7 +301,72 @@ h1 {
   color: #f3c9c9;
   font-size: 14px;
 }
+.own-advice {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  background: #241a05;
+  border-left: 3px solid var(--gold);
+  border-radius: 6px;
+  color: #ffe1a1;
+  font-size: 14px;
+}
 .empty { padding: 20px 28px; color: var(--muted); }
+
+/* ---- Per-trophy detail panel ---- */
+.detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 16px;
+  background: rgba(5, 2, 12, 0.82);
+  overflow-y: auto;
+}
+.detail-overlay[hidden] { display: none; }
+.detail-panel {
+  position: relative;
+  width: min(680px, 100%);
+  padding: 22px 24px;
+  background: var(--panel);
+  border: 1px solid var(--pink);
+  border-radius: 14px;
+  box-shadow: 0 0 40px rgba(255, 46, 136, 0.35);
+}
+.detail-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  font-size: 30px;
+  line-height: 1;
+  cursor: pointer;
+}
+.detail-close:hover { color: #fff; }
+.detail-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; padding-right: 30px; }
+.detail-head h2 { margin: 0; font-size: 24px; color: #fff; }
+.detail-meta { margin: 6px 0 0; font-size: 13px; color: var(--muted); }
+.detail-official { margin: 10px 0; color: var(--muted); font-style: italic; }
+.detail-missable {
+  margin: 10px 0;
+  padding: 8px 10px;
+  background: #2b0d16;
+  border-left: 3px solid var(--danger);
+  border-radius: 6px;
+  color: #f3c9c9;
+  font-size: 14px;
+}
+.detail-guide { margin: 10px 0; }
+.detail-guide strong { color: var(--cyan); }
+.detail-sources-label { margin: 12px 0 2px; font-size: 13px; font-weight: 700; color: var(--ink); }
+.detail-sources { margin: 0 0 4px; font-size: 13px; color: var(--muted); }
+.detail-sources a { color: var(--cyan); }
+.detail-sources a:hover { color: #fff; }
+.detail-earned { display: flex; gap: 8px; align-items: center; margin-top: 14px; font-weight: 700; cursor: pointer; }
+.detail-earned input { width: 20px; height: 20px; accent-color: var(--pink); }
 
 /* ---- Footer ---- */
 footer { max-width: 980px; padding: 8px 28px 28px; font-size: 13px; color: var(--muted); }

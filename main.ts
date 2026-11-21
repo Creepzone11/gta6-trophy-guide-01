@@ -6,6 +6,16 @@
 // bundler, and the app never touches the network — at build time or at run
 // time, the only files it reads are the ones in this repo.
 //
+// Round 6 changes (vs round 5): every trophy now cites the official trophy
+// list by name (PlayStation, Exophase, PSNProfiles) beside its guide sources,
+// and the three trophies whose trigger is still unconfirmed are flagged
+// "own advice — not yet checked in the game". The kind dropdown is replaced
+// by visible category filter chips (Story, Strangers, Crime, Activities,
+// Collectibles, Money, Combat, Secret, Missable) that really filter, and
+// clicking a trophy name opens a detail panel with the official description,
+// grade, "Can it be missed?" flag, own-words steps and the Sources block.
+// The 7-stage platinum roadmap and the saved-progress checklist are kept.
+//
 // What this script does, step by step:
 //   1. Checks that `app/` and `screenshots/` are actually here. If one is
 //      missing, it throws instead of handing in half an entry.
@@ -20,7 +30,7 @@
 //   mkdir -p out && MAKEFUN_OUTPUT_DIR=out node main.ts
 // Run it twice and the two dossiers must be byte-identical.
 
-import { cpSync, existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-frontend.ts';
@@ -34,6 +44,13 @@ for (const folder of folders) {
   if (!existsSync(join(here, folder))) {
     throw new Error(`cannot build the entry: ${folder}/ is missing beside main.ts`);
   }
+}
+
+// Refuse to hand in an entry whose trophy data does not parse or is not the
+// full official list of 55 — a broken or partial list would silently ship.
+const trophyDoc = JSON.parse(readFileSync(join(here, 'app', 'data', 'trophies.json'), 'utf-8'));
+if (!Array.isArray(trophyDoc.trophies) || trophyDoc.trophies.length !== 55) {
+  throw new Error(`cannot build the entry: trophies.json must hold 55 trophies, found ${trophyDoc.trophies?.length ?? 0}`);
 }
 
 mkdirSync(outDir, { recursive: true });
